@@ -1,0 +1,15 @@
+{
+  "name": "AppStore",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/bigquery": "^2.0.6",
+    "date-fns": "^1.30.1",
+    "jsonwebtoken": "^8.4.0",
+    "node-fetch": "^2.3.0"
+  },
+  "scripts": {
+    "start": "GOOGLE_APPLICATION_CREDENTIALS=\"./My Project 46435-cb6b70b79bc7.json\" node index.js"
+  }
+}
