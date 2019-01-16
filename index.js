@@ -2,7 +2,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 const fetch = require('node-fetch');
 const { BigQuery, } = require('@google-cloud/bigquery');
-const { format, subDays, lastDayOfWeek, } = require('date-fns');
+const { format, subDays, } = require('date-fns');
 
 const { tsvToCsv, tokenGen, } = require('./utils');
 const schema = require('./schema');
@@ -15,16 +15,12 @@ const download = async type => {
   const datasetId = 'app_store';
 
   let date = new Date();
-  if (type === 'SALES') {
-    date = lastDayOfWeek(subDays(new Date(), 7), { weekStartsOn: 1, });
-  }
-  const daysSub = type === 'SALES' ? 7 : 1;
   let token = tokenGen();
   while(true) {
     const formatedDate = format(date, 'YYYY-MM-DD');
     const fileName = `./csvs/${type}-${formatedDate}.csv`;
     if (fs.existsSync(fileName)) {
-      date = subDays(date, daysSub);
+      date = subDays(date, 1);
       continue;
     }
 
@@ -46,11 +42,11 @@ const download = async type => {
         token = tokenGen();
         continue
       } else {
-        date = subDays(date, daysSub);
+        date = subDays(date, 1);
         continue;
       }
     }
-    date = subDays(date, daysSub);
+    date = subDays(date, 1);
     const file = fs.createWriteStream(fileName);
     const finishPromise = new Promise((resolve, reject) => {
       file.on('finish', resolve);
