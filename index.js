@@ -16,7 +16,7 @@ const download = async type => {
 
   let date = new Date();
   if (type === 'SALES') {
-    date = lastDayOfWeek(new Date(), { weekStartsOn: 1, });
+    date = lastDayOfWeek(subDays(new Date(), 7), { weekStartsOn: 1, });
   }
   const daysSub = type === 'SALES' ? 7 : 1;
   let token = tokenGen();
@@ -28,11 +28,9 @@ const download = async type => {
       continue;
     }
 
-    const frequency = type === 'SALES' ? 'WEEKLY' : 'DAILY';
-    const reportSubType = type === 'SALES' ? 'OPT_IN' : 'SUMMARY';
     const version = type === 'SALES' ? '1_0' : '1_1';
 
-    const response = await fetch(`https://api.appstoreconnect.apple.com/v1/salesReports?filter[frequency]=${frequency}&filter[reportSubType]=${reportSubType}&filter[reportType]=${type}&filter[vendorNumber]=87808941&filter[version]=${version}&filter[reportDate]=${formatedDate}`, {
+    const response = await fetch(`https://api.appstoreconnect.apple.com/v1/salesReports?filter[frequency]=DAILY&filter[reportSubType]=SUMMARY&filter[reportType]=${type}&filter[vendorNumber]=87808941&filter[version]=${version}&filter[reportDate]=${formatedDate}`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}`, },
     });
