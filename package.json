@@ -5,11 +5,15 @@
   "license": "MIT",
   "dependencies": {
     "@google-cloud/bigquery": "^2.0.6",
+    "csv-parser": "^2.1.0",
     "date-fns": "^1.30.1",
     "jsonwebtoken": "^8.4.0",
+    "money": "^0.2.0",
+    "ndjson": "^1.5.0",
     "node-fetch": "^2.3.0"
   },
   "scripts": {
-    "start": "GOOGLE_APPLICATION_CREDENTIALS=\"./My Project 46435-cb6b70b79bc7.json\" node index.js"
+    "start": "GOOGLE_APPLICATION_CREDENTIALS=\"./My Project 46435-cb6b70b79bc7.json\" node reports.js",
+    "rates": "GOOGLE_APPLICATION_CREDENTIALS=\"./My Project 46435-cb6b70b79bc7.json\" node rates.js"
   }
 }

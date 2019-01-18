@@ -5,9 +5,9 @@ exports.SUBSCRIPTION = [
   { name: 'subscription_apple_id', type: 'STRING', mode: 'NULLABLE', },
   { name: 'subscription_group_id', type: 'STRING', mode: 'NULLABLE', },
   { name: 'subscription_duration', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'customer_price', type: 'STRING', mode: 'NULLABLE', },
+  { name: 'customer_price', type: 'NUMERIC', mode: 'NULLABLE', },
   { name: 'customer_currency', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'proceeds', type: 'STRING', mode: 'NULLABLE', },
+  { name: 'developer_proceeds', type: 'NUMERIC', mode: 'NULLABLE', },
   { name: 'proceeds_currency', type: 'STRING', mode: 'NULLABLE', },
   { name: 'preserved_pricing', type: 'STRING', mode: 'NULLABLE', },
   { name: 'proceeds_reason', type: 'STRING', mode: 'NULLABLE', },
@@ -15,12 +15,12 @@ exports.SUBSCRIPTION = [
   { name: 'device', type: 'STRING', mode: 'NULLABLE', },
   { name: 'state', type: 'STRING', mode: 'NULLABLE', },
   { name: 'country', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'active_subscriptions', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'active_free_trials', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'active_pay_up_front_subscriptions', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'active_pay_as_you_go_subscriptions', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'marketing_opt_ins', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'billing_retry', type: 'STRING', mode: 'NULLABLE', }
+  { name: 'active_subscriptions', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'active_free_trials', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'active_pay_up_front_subscriptions', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'active_pay_as_you_go_subscriptions', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'marketing_opt_ins', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'billing_retry', type: 'NUMERIC', mode: 'NULLABLE', }
 ];
 
 exports.SUBSCRIPTION_EVENT = [
@@ -46,10 +46,10 @@ exports.SUBSCRIPTION_EVENT = [
   { name: 'country', type: 'STRING', mode: 'NULLABLE', },
   { name: 'previous_subscription_name', type: 'STRING', mode: 'NULLABLE', },
   { name: 'previous_subscription_apple_id', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'days_before_canceling', type: 'STRING', mode: 'NULLABLE', },
+  { name: 'days_before_canceling', type: 'NUMERIC', mode: 'NULLABLE', },
   { name: 'cancellation_reason', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'days_canceled', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'quantity', type: 'STRING', mode: 'NULLABLE', }
+  { name: 'days_canceled', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'quantity', type: 'NUMERIC', mode: 'NULLABLE', }
 ];
 
 exports.SALES = [
@@ -60,15 +60,15 @@ exports.SALES = [
   { name: 'name', type: 'STRING', mode: 'NULLABLE', },
   { name: 'version', type: 'STRING', mode: 'NULLABLE', },
   { name: 'product_type_identifier', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'units', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'developer_proceeds_per_item', type: 'STRING', mode: 'NULLABLE', },
+  { name: 'units', type: 'NUMERIC', mode: 'NULLABLE', },
+  { name: 'developer_proceeds_per_item', type: 'NUMERIC', mode: 'NULLABLE', },
   { name: 'begin_date', type: 'STRING', mode: 'NULLABLE', },
   { name: 'end_date', type: 'STRING', mode: 'NULLABLE', },
   { name: 'customer_currency', type: 'STRING', mode: 'NULLABLE', },
   { name: 'customer_code', type: 'STRING', mode: 'NULLABLE', },
   { name: 'currency_of_proceeds', type: 'STRING', mode: 'NULLABLE', },
   { name: 'apple_identifier', type: 'STRING', mode: 'NULLABLE', },
-  { name: 'customer_price', type: 'STRING', mode: 'NULLABLE', },
+  { name: 'customer_price', type: 'NUMERIC', mode: 'NULLABLE', },
   { name: 'promo_code', type: 'STRING', mode: 'NULLABLE', },
   { name: 'parent_identifier', type: 'STRING', mode: 'NULLABLE', },
   { name: 'subscription', type: 'STRING', mode: 'NULLABLE', },

@@ -27,3 +27,10 @@ exports.tsvToCsv = () => new Transform({
     done();
   }
 });
+
+exports.addNewLines = () => new Transform({
+  transform(chunk, encoding, done) {
+    this.push(chunk.toString().replace(/},/g, '}\n').replace(/^\[|]$/g, ''));
+    done();
+  }
+});

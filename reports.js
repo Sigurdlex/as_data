@@ -7,7 +7,7 @@ const { format, subDays, } = require('date-fns');
 const { tsvToCsv, tokenGen, } = require('./utils');
 const schema = require('./schema');
 
-const reportTypes = ['SALES', 'SUBSCRIPTION', 'SUBSCRIPTION_EVENT'];
+const reportTypes = ['SUBSCRIPTION', 'SUBSCRIPTION_EVENT', 'SALES'];
 
 const download = async type => {
   const projectId = 'impressive-tome-227410';
@@ -18,7 +18,7 @@ const download = async type => {
   let token = tokenGen();
   while(true) {
     const formatedDate = format(date, 'YYYY-MM-DD');
-    const fileName = `./csvs/${type}-${formatedDate}.csv`;
+    const fileName = `./reports/${type}-${formatedDate}.csv`;
     if (fs.existsSync(fileName)) {
       date = subDays(date, 1);
       continue;
@@ -62,7 +62,7 @@ const download = async type => {
 
     const [job] = await bigquery
       .dataset(datasetId)
-      .table(type)
+      .table(`${type}1`)
       .load(fileName, {
         sourceFormat: 'CSV',
         skipLeadingRows: 1,
