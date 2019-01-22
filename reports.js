@@ -13,7 +13,7 @@ const loadRates = require('./rates');
 
 const asyncReadFile = promisify(fs.readFile);
 
-const reportTypes = ['SUBSCRIPTION_EVENT', 'SUBSCRIPTION', 'SALES', 'SUBSCRIBER'];
+const reportTypes = ['SUBSCRIBER', 'SALES', 'SUBSCRIPTION_EVENT', 'SUBSCRIPTION'];
 
 const download = async type => {
   const projectId = 'impressive-tome-227410';
@@ -66,7 +66,6 @@ const download = async type => {
       .pipe(addUsdPrice(type, rates, formatedDate))
       .pipe(json2csv)
       .pipe(file);
-
     await finishPromise;
 
     const [job] = await bigquery
@@ -87,6 +86,7 @@ const download = async type => {
     await download(reportTypes[0]);
     await download(reportTypes[1]);
     await download(reportTypes[2]);
+    await download(reportTypes[3]);
     console.log('that\'s all!')
   } catch(err) {
     console.log(err);
