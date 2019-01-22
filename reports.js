@@ -3,11 +3,17 @@ const zlib = require('zlib');
 const fetch = require('node-fetch');
 const { BigQuery, } = require('@google-cloud/bigquery');
 const { format, subDays, } = require('date-fns');
+const csv = require('csvtojson');
+const { Transform: Json2csvTransform, } = require('json2csv');
+const { promisify, } = require('util');
 
-const { tsvToCsv, tokenGen, } = require('./utils');
+const { tsvToCsv, tokenGen, addUsdPrice, fileWriteStreamPromise, } = require('./utils');
 const schema = require('./schema');
+const loadRates = require('./rates');
 
-const reportTypes = ['SUBSCRIPTION', 'SUBSCRIPTION_EVENT', 'SALES'];
+const asyncReadFile = promisify(fs.readFile);
+
+const reportTypes = ['SUBSCRIPTION_EVENT', 'SUBSCRIPTION', 'SALES', 'SUBSCRIBER'];
 
 const download = async type => {
   const projectId = 'impressive-tome-227410';
@@ -16,6 +22,7 @@ const download = async type => {
 
   let date = new Date();
   let token = tokenGen();
+  const rates = JSON.parse(await asyncReadFile('./rates.json'));
   while(true) {
     const formatedDate = format(date, 'YYYY-MM-DD');
     const fileName = `./reports/${type}-${formatedDate}.csv`;
@@ -25,8 +32,9 @@ const download = async type => {
     }
 
     const version = type === 'SALES' ? '1_0' : '1_1';
+    const reportSubType = type === 'SUBSCRIBER' ? 'DETAILED' : 'SUMMARY';
 
-    const response = await fetch(`https://api.appstoreconnect.apple.com/v1/salesReports?filter[frequency]=DAILY&filter[reportSubType]=SUMMARY&filter[reportType]=${type}&filter[vendorNumber]=87808941&filter[version]=${version}&filter[reportDate]=${formatedDate}`, {
+    const response = await fetch(`https://api.appstoreconnect.apple.com/v1/salesReports?filter[frequency]=DAILY&filter[reportSubType]=${reportSubType}&filter[reportType]=${type}&filter[vendorNumber]=87808941&filter[version]=${version}&filter[reportDate]=${formatedDate}`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}`, },
     });
@@ -48,26 +56,26 @@ const download = async type => {
     }
     date = subDays(date, 1);
     const file = fs.createWriteStream(fileName);
-    const finishPromise = new Promise((resolve, reject) => {
-      file.on('finish', resolve);
-      file.on('error', reject);
-    });
+    const finishPromise = fileWriteStreamPromise(file);
 
+    const json2csv = new Json2csvTransform({ quote: ''});
     await body
       .pipe(zlib.createGunzip())
       .pipe(tsvToCsv())
+      .pipe(csv())
+      .pipe(addUsdPrice(type, rates, formatedDate))
+      .pipe(json2csv)
       .pipe(file);
 
     await finishPromise;
 
     const [job] = await bigquery
       .dataset(datasetId)
-      .table(`${type}1`)
+      .table(`${type}`)
       .load(fileName, {
         sourceFormat: 'CSV',
         skipLeadingRows: 1,
         schema: { fields: schema[type], },
-        headers: {},
       });
     console.log('bigquery results', job.status);
   }
@@ -75,8 +83,10 @@ const download = async type => {
 
 (async () => {
   try {
+    await loadRates();
     await download(reportTypes[0]);
     await download(reportTypes[1]);
+    await download(reportTypes[2]);
     console.log('that\'s all!')
   } catch(err) {
     console.log(err);
