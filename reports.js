@@ -7,13 +7,13 @@ const csv = require('csvtojson');
 const { Transform: Json2csvTransform, } = require('json2csv');
 const { promisify, } = require('util');
 
-const { tsvToCsv, tokenGen, addUsdPrice, } = require('./utils');
+const { tsvToCsv, tokenGen, addUsdPrice, fileWriteStreamPromise, } = require('./utils');
 const schema = require('./schema');
 const loadRates = require('./rates');
 
 const asyncReadFile = promisify(fs.readFile);
 
-const reportTypes = ['SALES', 'SUBSCRIBER', 'SUBSCRIPTION_EVENT', 'SUBSCRIPTION'];
+const reportTypes = ['SUBSCRIBER', 'SALES', 'SUBSCRIPTION_EVENT', 'SUBSCRIPTION'];
 
 const download = async type => {
   const projectId = 'impressive-tome-227410';
@@ -56,7 +56,7 @@ const download = async type => {
     }
     date = subDays(date, 1);
     const file = fs.createWriteStream(fileName);
-
+    const finishPromise = fileWriteStreamPromise(file);
     const json2csv = new Json2csvTransform({ quote: ''});
     body
       .pipe(zlib.createGunzip())
@@ -64,20 +64,18 @@ const download = async type => {
       .pipe(csv())
       .pipe(addUsdPrice(type, rates, formatedDate))
       .pipe(json2csv)
-      .pipe(file)
-      .on('finish', async () => {
-        const [job] = await bigquery
-          .dataset(datasetId)
-          .table(type)
-          .load(fileName, {
-            sourceFormat: 'CSV',
-            skipLeadingRows: 1,
-            schema: { fields: schema[type], },
-          });
-
-        console.log('bigquery results', job.status);
-      })
-
+      .pipe(file);
+    await finishPromise;
+  
+    const [job] = await bigquery
+      .dataset(datasetId)
+      .table(type)
+      .load(fileName, {
+        sourceFormat: 'CSV',
+        skipLeadingRows: 1,
+        schema: { fields: schema[type], },
+      });
+    console.log('bigquery results', job.status);
 
   }
 };
@@ -89,7 +87,7 @@ const download = async type => {
     await download(reportTypes[1]);
     await download(reportTypes[2]);
     await download(reportTypes[3]);
-    console.log('that\'s all!')
+    console.log('that\'s all!');
   } catch(err) {
     console.log(err);
   }
